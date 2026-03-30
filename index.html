@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxoPequeno | Gestão Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Menu -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>FluxoPequeno</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-page="dashboard"><i class="fas fa-home"></i> <span>Dashboard</span></li>
+                <li data-page="agenda"><i class="fas fa-calendar-alt"></i> <span>Agenda</span></li>
+                <li data-page="historico"><i class="fas fa-history"></i> <span>Histórico</span></li>
+                <li data-page="servicos"><i class="fas fa-concierge-bell"></i> <span>Serviços</span></li>
+                <li data-page="financeiro"><i class="fas fa-wallet"></i> <span>Financeiro</span></li>
+                <li data-page="configuracoes"><i class="fas fa-cog"></i> <span>Ajustes</span></li>
+            </ul>
+            <div class="theme-toggle">
+                <i class="fas fa-moon" id="theme-icon"></i>
+                <span id="theme-text">Modo Escuro</span>
+            </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main class="content">
+            <header>
+                <h1 id="page-title">Dashboard</h1>
+                <div class="user-profile">
+                    <span id="current-date"></span>
+                </div>
+            </header>
+
+            <!-- Section: Dashboard -->
+            <section id="dashboard" class="page active">
+                <div class="metrics-grid">
+                    <div class="card glass">
+                        <h3>Faturamento Total</h3>
+                        <p class="value" id="stat-total-revenue">R$ 0,00</p>
+                    </div>
+                    <div class="card glass">
+                        <h3>Faturamento (Mês)</h3>
+                        <p class="value" id="stat-month-revenue">R$ 0,00</p>
+                    </div>
+                    <div class="card glass">
+                        <h3>Ticket Médio</h3>
+                        <p class="value" id="stat-avg-ticket">R$ 0,00</p>
+                    </div>
+                    <div class="card glass">
+                        <h3>Serviço Popular</h3>
+                        <p class="value" id="stat-top-service">-</p>
+                    </div>
+                </div>
+
+                <div class="charts-container">
+                    <div class="chart-card glass">
+                        <h3>Faturamento por Dia</h3>
+                        <canvas id="chartDaily"></canvas>
+                    </div>
+                    <div class="chart-card glass">
+                        <h3>Vendas por Serviço</h3>
+                        <canvas id="chartServices"></canvas>
+                    </div>
+                </div>
+
+                <div class="insights-section glass" id="ai-insights">
+                    <h3><i class="fas fa-lightbulb"></i> Insights do Fluxo</h3>
+                    <div id="insights-content">Carregando análise...</div>
+                </div>
+            </section>
+
+            <!-- Section: Agenda -->
+            <section id="agenda" class="page">
+                <div class="action-bar">
+                    <button class="btn-primary" onclick="openModal('modal-atendimento')">
+                        <i class="fas fa-plus"></i> Novo Atendimento
+                    </button>
+                </div>
+                <div class="glass list-container">
+                    <table id="table-agenda">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Serviço</th>
+                                <th>Data/Hora</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-agenda"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Serviços -->
+            <section id="servicos" class="page">
+                <div class="action-bar">
+                    <button class="btn-primary" onclick="openModal('modal-servico')">
+                        <i class="fas fa-plus"></i> Novo Serviço
+                    </button>
+                </div>
+                <div class="services-grid" id="list-servicos"></div>
+            </section>
+
+            <!-- Section: Histórico -->
+            <section id="historico" class="page">
+                <div class="filters glass">
+                    <input type="date" id="filter-date-start">
+                    <input type="date" id="filter-date-end">
+                    <select id="filter-service">
+                        <option value="">Todos os serviços</option>
+                    </select>
+                    <button class="btn-secondary" onclick="applyFilters()">Filtrar</button>
+                </div>
+                <div class="glass list-container">
+                    <table id="table-historico">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Serviço</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-historico"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Financeiro -->
+            <section id="financeiro" class="page">
+                <div class="finance-summary">
+                    <div class="card glass profit">
+                        <h3>Lucro Estimado</h3>
+                        <p class="value" id="fin-profit">R$ 0,00</p>
+                    </div>
+                    <div class="card glass">
+                        <h3>Custos Totais</h3>
+                        <p class="value" id="fin-costs">R$ 0,00</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Configurações / Backup -->
+            <section id="configuracoes" class="page">
+                <div class="glass card-settings">
+                    <h3>Dados e Backup</h3>
+                    <p>Exporte seus dados para segurança ou importe de outro dispositivo.</p>
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="exportData()"><i class="fas fa-download"></i> Exportar JSON</button>
+                        <button class="btn-secondary" onclick="document.getElementById('import-file').click()"><i class="fas fa-upload"></i> Importar JSON</button>
+                        <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+                    </div>
+                    <hr>
+                    <button class="btn-danger" onclick="clearAllData()">Limpar Todos os Dados</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <div id="modal-atendimento" class="modal">
+        <div class="modal-content glass">
+            <h2>Novo Atendimento</h2>
+            <form id="form-atendimento">
+                <input type="text" id="at-cliente" placeholder="Nome do Cliente (Opcional)">
+                <select id="at-servico" required></select>
+                <input type="datetime-local" id="at-data" required>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-ghost" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-servico" class="modal">
+        <div class="modal-content glass">
+            <h2>Novo Serviço</h2>
+            <form id="form-servico">
+                <input type="text" id="sv-nome" placeholder="Nome do Serviço" required>
+                <input type="number" id="sv-preco" placeholder="Preço de Venda (R$)" step="0.01" required>
+                <input type="number" id="sv-custo" placeholder="Custo (R$ - Opcional)" step="0.01">
+                <div class="modal-buttons">
+                    <button type="button" class="btn-ghost" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
